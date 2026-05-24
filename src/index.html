@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <h3>Reports</h3>
+        <ul>
+            <li><a href="report/?id=db9e2Mr">db9e2Mr</a></li>
+            <li><a href="report/?id=Dq76Ar5">Dq76Ar5</a></li>
+            <li><a href="report/?id=jelRbpR">jelRbpR</a></li>
+            <li><a href="report/?id=EqWXVgB">EqWXVgB</a></li>
+        </ul>
+
+        <br>
+
+        <h3>Manual Search</h3>
+        <input id="search"> <button id="btn">🔎</button>
+        <script>
+            const input = document.getElementById('search');
+            const btn = document.getElementById('btn');
+            btn.onclick = click;
+
+            function click() {
+                window.location = "report/?id=" + input.value;
+            }
+        </script>
+    </div>
+</body>
+</html>
