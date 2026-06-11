@@ -25,7 +25,7 @@ function renderChips(items) {
     return `<div class="chips">${chips}</div>`;
 }
 
-function renderScreenshots(screenshots) {
+function renderScreenshots(screenshots, id) {
     const entries = Object.entries(screenshots || {}).filter(([, link]) => Boolean(link));
     if (entries.length === 0) {
         return '<span class="empty">No screenshots provided</span>';
@@ -33,11 +33,12 @@ function renderScreenshots(screenshots) {
 
     const slides = entries
         .map(([name, link], index) => {
+            const localSrc = id ? `../../data/images/${id}_${index}.webp` : link;
             return `
                 <figure class="screenshot-item ${index === 0 ? "active" : ""}" data-slide="${index}">
                     <a href="${link}" target="_blank" rel="noopener noreferrer">
                         <div class="screenshot-media">
-                            <img src="${link}" alt="Screenshot ${index + 1}: ${name}" loading="lazy" />
+                            <img src="${localSrc}" data-fallback="${link}" alt="Screenshot ${index + 1}: ${name}" loading="lazy" onerror="this.onerror=null;this.src=this.dataset.fallback;" />
                         </div>
                     </a>
                 </figure>
@@ -97,7 +98,14 @@ function wireSlideshow(card) {
 }
 
 async function renderSubmission() {
-    const submission = await loadData();
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+
+    if (!id) {
+        return null;
+    }
+
+    const submission = await loadData(id);
 
     const card = document.getElementById("submission-card");
     if (!card) return;
@@ -127,7 +135,7 @@ async function renderSubmission() {
 
             <section class="right-panel">
                 <h2 class="section-title">Screenshots</h2>
-                ${renderScreenshots(submission.screenshots)}
+                ${renderScreenshots(submission.screenshots, id)}
             </section>
         </div>
     `;
@@ -168,15 +176,8 @@ function normalizeSubmission(reportData) {
     };
 }
 
-async function loadData() {
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
-
-    if (!id) {
-        return null;
-    }
-
-    const res = await fetch('../../parsed_data.json');
+async function loadData(id) {
+    const res = await fetch('../../data/parsed_data.json');
     const data = await res.json();
 
     const reportData = data?.[id];
